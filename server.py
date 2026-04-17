@@ -1048,4 +1048,4 @@ def get_expat_keywords(
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 8080))
-    mcp.run(transport="sse", host="0.0.0.0", port=port)
+    mcp.run(transport="http", host="0.0.0.0", port=port)
