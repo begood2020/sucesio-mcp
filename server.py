@@ -1047,9 +1047,14 @@ def get_expat_keywords(
 
 if __name__ == "__main__":
     import sys
+    import os
     if "--port" in sys.argv:
         idx = sys.argv.index("--port")
-        port = int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else 8000
-        mcp.run(transport="sse", port=port)
+        port = int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else int(os.environ.get("PORT", 8000))
+        mcp.run(transport="http", host="0.0.0.0", port=port)
+    elif os.environ.get("PORT"):
+        # Railway / cloud deployment without --port flag
+        port = int(os.environ["PORT"])
+        mcp.run(transport="http", host="0.0.0.0", port=port)
     else:
         mcp.run(transport="stdio")
