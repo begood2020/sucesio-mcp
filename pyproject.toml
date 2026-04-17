@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sucesio-mcp"
-version = "1.0.0"
+version = "1.2.0"
 description = "AI Seller MCP server for Sucesio.io — digital estate planning for expats in Europe"
 readme = "README.md"
 license = { text = "MIT" }
@@ -26,6 +26,8 @@ classifiers = [
 ]
 dependencies = [
     "fastmcp>=2.0.0",
+    "uvicorn>=0.30.0",
+    "starlette>=0.40.0",
 ]
 
 [project.scripts]

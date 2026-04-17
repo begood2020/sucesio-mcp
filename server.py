@@ -1048,13 +1048,49 @@ def get_expat_keywords(
 if __name__ == "__main__":
     import sys
     import os
-    if "--port" in sys.argv:
-        idx = sys.argv.index("--port")
-        port = int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else int(os.environ.get("PORT", 8000))
-        mcp.run(transport="http", host="0.0.0.0", port=port)
-    elif os.environ.get("PORT"):
-        # Railway / cloud deployment without --port flag
-        port = int(os.environ["PORT"])
-        mcp.run(transport="http", host="0.0.0.0", port=port)
+    import uvicorn
+    from starlette.applications import Starlette
+    from starlette.routing import Route, Mount
+    from starlette.responses import JSONResponse, PlainTextResponse
+
+    def _get_port() -> int:
+        if "--port" in sys.argv:
+            idx = sys.argv.index("--port")
+            return int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else int(os.environ.get("PORT", 8080))
+        return int(os.environ.get("PORT", 8080))
+
+    if "--port" in sys.argv or os.environ.get("PORT"):
+        port = _get_port()
+
+        # Smithery server-card endpoint (bypasses automatic scan)
+        async def server_card(request):
+            return JSONResponse({
+                "name": "sucesio-seller",
+                "version": "1.1.0",
+                "description": (
+                    "AI Seller MCP server for Sucesio.io — "
+                    "digital estate planning complement for expats in Europe. "
+                    "9 tools covering product overview, pricing, lead qualification, "
+                    "FAQ, B2B pitch, SEO keywords, use cases, security, and will comparison."
+                ),
+                "homepage": "https://sucesio.io",
+                "license": "MIT",
+                "tags": ["estate-planning", "expats", "crypto-inheritance",
+                         "succession", "digital-legacy", "cross-border", "gdpr"]
+            })
+
+        async def healthz(request):
+            return PlainTextResponse("ok")
+
+        # Build combined ASGI app: custom routes + FastMCP HTTP app
+        fastmcp_asgi = mcp.http_app(path="/mcp")
+
+        app = Starlette(routes=[
+            Route("/.well-known/mcp/server-card.json", server_card, methods=["GET"]),
+            Route("/healthz", healthz, methods=["GET"]),
+            Mount("/", app=fastmcp_asgi),
+        ])
+
+        uvicorn.run(app, host="0.0.0.0", port=port)
     else:
         mcp.run(transport="stdio")
