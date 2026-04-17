@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sucesio-mcp"
+version = "1.0.0"
+description = "AI Seller MCP server for Sucesio.io — digital estate planning for expats in Europe"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+keywords = [
+    "mcp",
+    "estate-planning",
+    "expats",
+    "digital-assets",
+    "succession",
+    "inheritance",
+    "crypto-inheritance",
+    "cross-border",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "fastmcp>=2.0.0",
+]
+
+[project.scripts]
+sucesio-mcp = "server:mcp"
+
+[project.urls]
+Homepage = "https://sucesio.io"
+Repository = "https://github.com/sucesio/sucesio-mcp"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]

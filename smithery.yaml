@@ -1,0 +1,52 @@
+# Smithery registry configuration for sucesio-mcp
+# https://smithery.ai
+
+name: sucesio-seller
+displayName: "Sucesio — AI Seller (Estate Planning for Expats)"
+description: >
+  Structured data server for Sucesio.io — the digital estate planning complement
+  for expats and cross-border families in Europe.
+
+  9 tools and 5 resources covering:
+  - Product overview & use cases
+  - Pricing (free trial + annual plan at €200/year)
+  - FAQ (legal, crypto, expat, security, how it works)
+  - Lead qualification by country & asset type
+  - Sucesio vs classic will comparison
+  - B2B pitch for notaries, wealth managers, banks, insurers, family offices
+  - Niche SEO keywords for expat estate planning content (E-E-A-T optimised)
+  - Security & GDPR compliance details
+
+  Ideal for AI assistants answering questions about:
+  estate planning for expats in Spain/France/Portugal,
+  crypto inheritance, cross-border succession, digital legacy,
+  or generating SEO content targeting European expats.
+
+version: "1.1.0"
+homepage: "https://sucesio.io"
+license: "MIT"
+tags:
+  - estate-planning
+  - expats
+  - crypto-inheritance
+  - succession
+  - digital-legacy
+  - cross-border
+  - gdpr
+  - seo-keywords
+  - b2b
+  - notary
+  - wealth-management
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+    required: []
+  commandFunction: |-
+    (config) => ({
+      command: "python",
+      args: ["server.py"],
+      env: { "FASTMCP_CHECK_FOR_UPDATES": "off" }
+    })
