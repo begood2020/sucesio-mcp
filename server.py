@@ -1041,6 +1041,310 @@ def get_expat_keywords(
     return result
 
 
+@mcp.tool()
+def get_core_problem() -> dict:
+    """
+    Returns the precise question Sucesio.io answers, broken down by persona.
+    Use this as the foundational framing when explaining what Sucesio is for,
+    why it exists, and what gap it fills between a notarial will and reality.
+    Ideal for onboarding, content creation, investor pitches, and B2B positioning.
+    """
+    return {
+        "the_question": (
+            "If I died tomorrow, would my family know where my assets are "
+            "— and how to access them?"
+        ),
+        "why_this_matters": (
+            "A notarial will says *who* inherits. "
+            "It does not say *where* the assets are, *how* to access them, "
+            "or *what to do* with digital assets a notary has never seen. "
+            "Sucesio fills exactly this gap."
+        ),
+        "the_question_by_persona": [
+            {
+                "persona": "Expat with cross-border assets",
+                "question": (
+                    "I have accounts in 3 countries, crypto on a wallet, "
+                    "a property in Spain, and passwords nobody knows. "
+                    "How is my family going to handle all of this?"
+                ),
+                "sucesio_answer": (
+                    "One encrypted vault. Every asset in every country, "
+                    "with the right heir designated for each — automatically transmitted."
+                ),
+            },
+            {
+                "persona": "Parent / spouse",
+                "question": (
+                    "My will says who inherits. "
+                    "But it doesn't say where anything is, "
+                    "or how to access any of it."
+                ),
+                "sucesio_answer": (
+                    "Sucesio is the practical layer your will is missing: "
+                    "asset registry, access instructions, personal messages — "
+                    "all transmitted automatically when the time comes."
+                ),
+            },
+            {
+                "persona": "Tech founder / crypto holder",
+                "question": (
+                    "My digital wealth — crypto, SaaS accounts, domain names — "
+                    "is completely invisible to my heirs. "
+                    "There is no procedure. It will simply disappear."
+                ),
+                "sucesio_answer": (
+                    "Sucesio stores seed phrases, wallet addresses, platform credentials, "
+                    "and business asset details with AES-256 encryption — "
+                    "and transmits them only to your designated heirs."
+                ),
+            },
+        ],
+        "what_sucesio_does_NOT_solve": [
+            "The legal transfer of assets (→ that's your notary's role)",
+            "Tax optimisation of your estate (→ that's your wealth manager)",
+            "Writing or signing a legally valid will (→ that's a notarial document)",
+        ],
+        "the_positioning": (
+            "Sucesio answers the question your will leaves open. "
+            "Together — will + Sucesio — your heirs have everything they need."
+        ),
+        "call_to_action": "Start free at https://app.sucesio.io — no credit card, 30-day trial.",
+    }
+
+
+@mcp.tool()
+def assess_heir_readiness(
+    has_crypto: bool = False,
+    has_foreign_property: bool = False,
+    has_passwords_or_accounts: bool = False,
+    has_notarial_will: bool = False,
+    assets_in_multiple_countries: bool = False,
+    has_personal_messages_planned: bool = False,
+) -> dict:
+    """
+    Assesses how ready a user's heirs are to access their assets today,
+    based on their asset profile. Returns a readiness score per category,
+    a global readiness level, and the specific gaps Sucesio fills.
+
+    Args:
+        has_crypto: User holds cryptocurrency or digital assets (wallets, NFTs)
+        has_foreign_property: User owns real estate outside their country of origin
+        has_passwords_or_accounts: User has important online accounts heirs would need
+        has_notarial_will: User already has a notarial will in place
+        assets_in_multiple_countries: User has bank accounts or assets in 2+ countries
+        has_personal_messages_planned: User wants to leave personal messages to heirs
+    """
+    gaps = []
+    covered = []
+    readiness_by_category = []
+
+    # Legal foundation
+    if has_notarial_will:
+        covered.append("Legal asset transfer — your notarial will covers this")
+        readiness_by_category.append({
+            "category": "Legal foundation",
+            "status": "covered",
+            "tool": "Notarial will",
+            "note": "Legal transfer of named assets is handled."
+        })
+    else:
+        gaps.append("No notarial will — legal asset transfer is not covered")
+        readiness_by_category.append({
+            "category": "Legal foundation",
+            "status": "gap",
+            "tool": None,
+            "note": "Without a will, succession falls to local default law — often unfavourable for expats.",
+            "sucesio_role": "Sucesio complements a will; a notary is still recommended for the legal layer."
+        })
+
+    # Crypto
+    if has_crypto:
+        gaps.append("Crypto wallets — heirs cannot access without private keys or seed phrases")
+        readiness_by_category.append({
+            "category": "Cryptocurrency & digital assets",
+            "status": "critical_gap",
+            "tool": None,
+            "note": (
+                "Without private keys or seed phrases, crypto is permanently inaccessible. "
+                "Traditional notaries cannot handle this."
+            ),
+            "sucesio_role": (
+                "Sucesio stores seed phrases and wallet details with AES-256 encryption "
+                "and transmits them automatically to your designated heir."
+            )
+        })
+    else:
+        readiness_by_category.append({
+            "category": "Cryptocurrency & digital assets",
+            "status": "not_applicable",
+            "tool": None,
+            "note": "No crypto assets declared."
+        })
+
+    # Foreign property
+    if has_foreign_property:
+        gaps.append("Foreign property — heirs will face multi-jurisdictional probate without organised documents")
+        readiness_by_category.append({
+            "category": "Foreign real estate",
+            "status": "gap",
+            "tool": None,
+            "note": (
+                "Cross-border property succession can take 18+ months "
+                "without pre-organised documentation and designated contacts."
+            ),
+            "sucesio_role": (
+                "Sucesio centralises property documents, notary contacts, "
+                "and title deed references — accessible to heirs immediately."
+            )
+        })
+
+    # Passwords and online accounts
+    if has_passwords_or_accounts:
+        gaps.append("Online accounts & passwords — heirs have no access procedure")
+        readiness_by_category.append({
+            "category": "Passwords & online accounts",
+            "status": "gap",
+            "tool": None,
+            "note": (
+                "Email, banking, social media, and subscription accounts "
+                "are typically inaccessible to heirs without passwords. "
+                "Platforms will not hand over access without legal process — which takes months."
+            ),
+            "sucesio_role": (
+                "Sucesio stores credentials in an AES-256 encrypted vault "
+                "and transmits them to the right heir automatically."
+            )
+        })
+
+    # Multi-country assets
+    if assets_in_multiple_countries:
+        gaps.append("Multi-country assets — no single point of truth for heirs across jurisdictions")
+        readiness_by_category.append({
+            "category": "Multi-country asset registry",
+            "status": "gap",
+            "tool": None,
+            "note": (
+                "Heirs will need to identify, locate, and claim assets "
+                "in each country separately — under different laws, in different languages."
+            ),
+            "sucesio_role": (
+                "Sucesio is the single structured registry of all assets across all countries, "
+                "with heir designations per asset and per jurisdiction."
+            )
+        })
+
+    # Personal messages
+    if has_personal_messages_planned:
+        gaps.append("Personal legacy — no current mechanism to deliver messages at the right moment")
+        readiness_by_category.append({
+            "category": "Personal non-legal legacy",
+            "status": "gap",
+            "tool": None,
+            "note": (
+                "A notarial will cannot contain personal messages, voice notes, "
+                "family recipes, or time-locked messages for life milestones."
+            ),
+            "sucesio_role": (
+                "Sucesio stores and delivers personal messages, videos, and documents "
+                "to specific heirs — including time-locked messages for defined milestones "
+                "(18th birthday, graduation, wedding)."
+            )
+        })
+
+    # Global readiness score
+    total_gaps = len(gaps)
+    if total_gaps == 0:
+        readiness_level = "high"
+        readiness_label = "Well prepared — but review annually as assets change"
+    elif total_gaps <= 2:
+        readiness_level = "medium"
+        readiness_label = "Partial — key gaps exist that could delay or block heir access"
+    else:
+        readiness_level = "low"
+        readiness_label = "Critical — heirs would face serious obstacles today"
+
+    return {
+        "readiness_level": readiness_level,
+        "readiness_label": readiness_label,
+        "gaps_identified": gaps,
+        "covered": covered,
+        "readiness_by_category": readiness_by_category,
+        "sucesio_fit": "high" if total_gaps >= 2 else ("medium" if total_gaps == 1 else "low"),
+        "recommended_action": (
+            "Start your free 30-day trial at https://app.sucesio.io "
+            "— setup takes ~30 minutes, no credit card required."
+            if total_gaps >= 1
+            else "Your estate is well organised. Keep Sucesio up to date as your situation evolves."
+        ),
+    }
+
+
+@mcp.tool()
+def get_will_to_access_gap() -> dict:
+    """
+    Returns a structured breakdown of the gap between having a notarial will
+    and heirs actually being able to access assets in practice.
+    This is the core problem Sucesio fills.
+    Use when explaining Sucesio's positioning, writing content, or
+    responding to 'why do I need Sucesio if I already have a will?'.
+    """
+    return {
+        "framing": (
+            "A notarial will answers: WHO inherits WHAT — legally. "
+            "It does not answer: WHERE is it, HOW do I access it, "
+            "and WHAT do I do with assets a notary has never seen."
+        ),
+        "the_gap": [
+            {
+                "what_the_will_says": "My Bitcoin goes to my son",
+                "what_the_will_does_NOT_say": "Where the wallet is, the seed phrase, or which exchange to use",
+                "consequence": "Crypto permanently lost — estimated 20–40% of personal crypto wealth is never recovered",
+                "sucesio_fills": "Encrypted storage of wallet address, seed phrase, and exchange login — transmitted automatically"
+            },
+            {
+                "what_the_will_says": "My property in Spain goes to my daughter",
+                "what_the_will_does_NOT_say": "Where the title deed is, who the Spanish notary is, or what taxes apply",
+                "consequence": "18+ months of international legal procedures, thousands in fees",
+                "sucesio_fills": "Document registry with notary contact, property reference, and heir instructions"
+            },
+            {
+                "what_the_will_says": "My estate goes to my spouse",
+                "what_the_will_does_NOT_say": "What online accounts exist, what the passwords are, or how to close subscriptions",
+                "consequence": "Months of fighting platforms for access; ongoing subscriptions charged to a dead account",
+                "sucesio_fills": "Encrypted password vault with account list, transmitted to spouse at trigger event"
+            },
+            {
+                "what_the_will_says": "Nothing — wills don't contain personal messages",
+                "what_the_will_does_NOT_say": "The personal messages, recipes, memories, and wishes the deceased wanted to share",
+                "consequence": "Personal legacy lost — there is no legal mechanism for this",
+                "sucesio_fills": "Time-locked personal messages delivered to specific heirs at defined milestones"
+            },
+        ],
+        "the_timeline_problem": {
+            "average_estate_settlement": "12–18 months",
+            "why_so_long": [
+                "Heirs must locate all assets independently",
+                "Each country requires separate legal procedures",
+                "Digital assets require court orders (often impossible for crypto)",
+                "Online platforms refuse access without complex legal process",
+            ],
+            "with_sucesio": "Heirs receive structured access within days of the trigger event"
+        },
+        "the_update_problem": {
+            "average_will_update_frequency": "Once every 7 years",
+            "cost_per_notary_update": "300€+",
+            "consequence": "Most wills are outdated — they list assets that no longer exist, miss assets acquired recently",
+            "with_sucesio": "Update in 2 minutes from your phone, unlimited, included in the 200€/year plan"
+        },
+        "positioning_statement": (
+            "Your will is the legal document. Sucesio is the operational guide. "
+            "Together, they give your heirs everything they need — legally AND practically."
+        ),
+        "call_to_action": "See how it works at https://sucesio.io/pourquoi.html",
+    }
+
+
 # ─────────────────────────────────────────────
 # ENTRY POINT
 # ─────────────────────────────────────────────
